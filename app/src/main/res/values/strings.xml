@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">Final Project</string>
-    <string name="searchModule">Искать модуль</string>
+    <string name="app_name">Application</string>
+    <string name="forward">Вперед</string>
+    <string name="back">Назад</string>
 </resources>
