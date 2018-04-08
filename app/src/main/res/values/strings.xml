@@ -2,4 +2,9 @@
     <string name="app_name">Application</string>
     <string name="forward">Вперед</string>
     <string name="back">Назад</string>
+    <string name="textOn">Включен</string>
+    <string name="textOff">Выключен</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="address">Адрес</string>
+    <string name="">
 </resources>
