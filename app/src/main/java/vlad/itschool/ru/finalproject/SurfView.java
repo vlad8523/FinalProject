@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -38,6 +37,7 @@ public class SurfView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         draw.requestStop();
+        draw.bluetoothConnection.closeConnect();
         boolean retry = true;
         while(retry){
             try {
@@ -73,38 +73,50 @@ class DrawThr extends Thread{
     private Bitmap backgroundJoystick,joystick;
     private SurfaceHolder surfaceHolder;
     private volatile boolean isRunning = true;
-    float x,y;
-    Rect rectBack,rectJoystick;
-    boolean isTouch = false;
-    public void setTouchDown(float x,float y){
-        this.x = x;
-        this.y = y;
-        isTouch = true;
-
-        rectBack = new Rect((int)x-80,(int)y-80,(int)x+80,(int)y+80);
-        rectJoystick = new Rect((int)x-48,(int)y-48,(int)x+48,(int)y+48);
-    }
-
-    public void setTouchMove(float x,float y){
-        this.x = x;
-        this.y = y;
-
-        rectJoystick = new Rect((int)x-48,(int)y-48,(int)x+48,(int)y+48);
-    }
-
-    public void setTouchUp(){
-        isTouch = false;
-    }
+    private float xfirst,yfirst;
+    private double r,Rad,x1,y1;
+    private Rect rectBack,rectJoystick;
+    private boolean isTouch = false;
+    private int radiusJoystick = 200;
+    public BluetoothConnection bluetoothConnection;
     /*
-* Конструктор
- */
+    * Конструктор
+    */
     public DrawThr(Context context, SurfaceHolder surfaceHolder, Resources resources){
         this.surfaceHolder = surfaceHolder;
 
         backgroundJoystick = BitmapFactory.decodeResource(resources, R.drawable.background_joystick);
         joystick = BitmapFactory.decodeResource(resources,R.drawable.joystick);
-
+        bluetoothConnection = new BluetoothConnection(context);
     }
+
+    public void setTouchDown(float x,float y){
+        xfirst = x;
+        yfirst = y;
+        isTouch = true;
+        r = Math.sqrt(radiusJoystick*radiusJoystick);
+        rectBack = new Rect((int)x-radiusJoystick,(int)y-radiusJoystick,(int)x+radiusJoystick,(int)y+radiusJoystick);
+        rectJoystick = new Rect((int)x-48,(int)y-48,(int)x+48,(int)y+48);
+        bluetoothConnection.send(0,0);
+    }
+
+    public void setTouchMove(float x,float y){
+        Rad=Math.sqrt(Math.pow(x-xfirst,2)+Math.pow(y-yfirst,2));
+        if(r>=Rad)  rectJoystick = new Rect((int)x-48,(int)y-48,(int)x+48,(int)y+48);
+        else {
+            y1 = (r*Math.abs(y-yfirst))/Rad*((y-yfirst)/Math.abs(y-yfirst))+yfirst;
+            x1 = (r*Math.abs(x-xfirst))/Rad*((x-xfirst)/Math.abs(x-xfirst))+xfirst;
+            rectJoystick = new Rect((int)x1-48,(int)y1-48,(int)x1+48,(int)y1+48);
+        }
+        bluetoothConnection.send(Math.abs(xfirst-x)*Math.abs(xfirst-x)/(xfirst-x),Math.abs(yfirst-y)*Math.abs(yfirst-y)/(yfirst-y));
+    }
+
+    public void setTouchUp(){
+        isTouch = false;
+        bluetoothConnection.send(0,0);
+    }
+
+
 
     public void requestStop(){
         isRunning = false;
