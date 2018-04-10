@@ -20,7 +20,7 @@ import android.widget.ToggleButton;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 
-public class MainActivity extends AppCompatActivity implements OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity {
     BluetoothSocket clientSocket;
     ToggleButton LED1, LED2;
     final String ENABLE_BT = BluetoothAdapter.ACTION_REQUEST_ENABLE;
@@ -38,55 +38,55 @@ public class MainActivity extends AppCompatActivity implements OnCheckedChangeLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(new SurfView(this));
 
-        startActivityForResult(new Intent(ENABLE_BT), 1);
-        bluetooth = BluetoothAdapter.getDefaultAdapter();
+//        startActivityForResult(new Intent(ENABLE_BT), 1);
+//        bluetooth = BluetoothAdapter.getDefaultAdapter();
 
-        LED1 = (ToggleButton) findViewById(R.id.toggleButtonLED1);
-        LED2 = (ToggleButton) findViewById(R.id.toggleButtonLED2);
+//        LED1 = (ToggleButton) findViewById(R.id.toggleButtonLED1);
+//        LED2 = (ToggleButton) findViewById(R.id.toggleButtonLED2);
 
-        LED1.setOnCheckedChangeListener(this);
-        LED2.setOnCheckedChangeListener(this);
+//        LED1.setOnCheckedChangeListener(this);
+//        LED2.setOnCheckedChangeListener(this);
 
-        try {
-            BluetoothDevice dev = bluetooth.getRemoteDevice(address);
-            Method m = dev.getClass().getMethod(
-                    "createRfcommSocket", new Class[] {int.class});
+//        try {
+//            BluetoothDevice dev = bluetooth.getRemoteDevice(address);
+//            Method m = dev.getClass().getMethod(
+//                    "createRfcommSocket", new Class[] {int.class});
 
-            clientSocket = (BluetoothSocket) m.invoke(dev, 1);
-            clientSocket.connect();
-            Toast.makeText(this, "Присоединение", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
-        }
-    }
+//            clientSocket = (BluetoothSocket) m.invoke(dev, 1);
+//            clientSocket.connect();
+//            Toast.makeText(this, "Присоединение", Toast.LENGTH_LONG).show();
+//        } catch (Exception e) {
+//            Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
+//        }
+//    }
 
 
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        String sentString = "";
-        switch (compoundButton.getId()) {
-            case (R.id.toggleButtonLED1):
-                sentString += 1;
-                break;
-            case (R.id.toggleButtonLED2):
-                sentString += 2;
-                break;
-        }
-        if (b) {
-            sentString += 1;
-        } else {
-            sentString += 0;
-        }
-        if(clientSocket!=null){
-        try {
-            OutputStream outputStream = clientSocket.getOutputStream();
-            outputStream.write(sentString.getBytes());
-        } catch (Exception e) {
-            Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
-        }
-        }
-        else Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
+//    @Override
+//    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//        String sentString = "";
+//        switch (compoundButton.getId()) {
+//            case (R.id.toggleButtonLED1):
+//                sentString += 1;
+//                break;
+//            case (R.id.toggleButtonLED2):
+//                sentString += 2;
+//                break;
+//        }
+//        if (b) {
+//            sentString += 1;
+//        } else {
+//            sentString += 0;
+//        }
+//        if(clientSocket!=null){
+//        try {
+//            OutputStream outputStream = clientSocket.getOutputStream();
+//            outputStream.write(sentString.getBytes());
+//        } catch (Exception e) {
+//            Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
+//        }
+//        }
+//        else Toast.makeText(this, "Ошибка", Toast.LENGTH_LONG).show();
     }
 }

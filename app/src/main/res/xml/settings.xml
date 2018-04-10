@@ -5,8 +5,5 @@
         <EditTextPreference
             android:key="address"
             android:title="@string/address" />
-        <Button
-            android:id="BtnConnect"
-            />
     </PreferenceCategory>
 </PreferenceScreen>
