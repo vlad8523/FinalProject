@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 /**
  * Задача: отрисовка джойстика
@@ -42,9 +43,12 @@ public class SurfView extends SurfaceView implements SurfaceHolder.Callback{
         while(retry){
             try {
                 draw.join();
+                draw.bluetoothConnection.join();
                 retry = false;
             }
-            catch (InterruptedException e){}
+            catch (InterruptedException e){
+                Toast.makeText(getContext(),"Ошибка4",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -73,8 +77,8 @@ class DrawThr extends Thread{
     private Bitmap backgroundJoystick,joystick;
     private SurfaceHolder surfaceHolder;
     private volatile boolean isRunning = true;
-    private float xfirst,yfirst;
-    private double r,Rad,x1,y1;
+    private float xFirst, yFirst;
+    private double r,Ras,x1,y1;
     private Rect rectBack,rectJoystick;
     private boolean isTouch = false;
     private int radiusJoystick = 200;
@@ -88,11 +92,12 @@ class DrawThr extends Thread{
         backgroundJoystick = BitmapFactory.decodeResource(resources, R.drawable.background_joystick);
         joystick = BitmapFactory.decodeResource(resources,R.drawable.joystick);
         bluetoothConnection = new BluetoothConnection(context);
+
     }
 
     public void setTouchDown(float x,float y){
-        xfirst = x;
-        yfirst = y;
+        xFirst = x;
+        yFirst = y;
         isTouch = true;
         r = Math.sqrt(radiusJoystick*radiusJoystick);
         rectBack = new Rect((int)x-radiusJoystick,(int)y-radiusJoystick,(int)x+radiusJoystick,(int)y+radiusJoystick);
@@ -101,14 +106,18 @@ class DrawThr extends Thread{
     }
 
     public void setTouchMove(float x,float y){
-        Rad=Math.sqrt(Math.pow(x-xfirst,2)+Math.pow(y-yfirst,2));
-        if(r>=Rad)  rectJoystick = new Rect((int)x-48,(int)y-48,(int)x+48,(int)y+48);
-        else {
-            y1 = (r*Math.abs(y-yfirst))/Rad*((y-yfirst)/Math.abs(y-yfirst))+yfirst;
-            x1 = (r*Math.abs(x-xfirst))/Rad*((x-xfirst)/Math.abs(x-xfirst))+xfirst;
-            rectJoystick = new Rect((int)x1-48,(int)y1-48,(int)x1+48,(int)y1+48);
+        Ras=Math.sqrt(Math.pow(x - xFirst,2)+Math.pow(y - yFirst,2));
+        if(r>=Ras) {
+            x1 = x;
+            y1 = y;
         }
-        bluetoothConnection.send(Math.abs(xfirst-x)*Math.abs(xfirst-x)/(xfirst-x),Math.abs(yfirst-y)*Math.abs(yfirst-y)/(yfirst-y));
+        else {
+            y1 = (Math.abs(y - yFirst)*radiusJoystick)/Ras*((y - yFirst)/Math.abs(y- yFirst))+ yFirst;
+            x1 = (Math.abs(x - xFirst)*radiusJoystick)/Ras*((x  - xFirst)/Math.abs(x- xFirst))+ xFirst;
+
+        }
+        rectJoystick = new Rect((int)x1-48,(int)y1-48,(int)x1+48,(int)y1+48);
+        bluetoothConnection.send(((x1 - xFirst)*100)/radiusJoystick,((yFirst-y1)*100)/radiusJoystick);
     }
 
     public void setTouchUp(){
