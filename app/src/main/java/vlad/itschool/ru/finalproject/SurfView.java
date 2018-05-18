@@ -83,6 +83,7 @@ class DrawThr extends Thread{
     private boolean isTouch = false;
     private int radiusJoystick = 200;
     public BluetoothConnection bluetoothConnection;
+    public String address = null;
     /*
     * Конструктор
     */

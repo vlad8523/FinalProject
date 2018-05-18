@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Bluetooth-conection">
+    <PreferenceCategory android:title="Bluetooth-соединение">
         <EditTextPreference
             android:key="address"
+            android:summary="@string/adressfull"
             android:title="@string/address" />
     </PreferenceCategory>
 </PreferenceScreen>
